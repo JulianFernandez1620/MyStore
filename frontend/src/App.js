@@ -1,18 +1,12 @@
-import "./App.css";
-import React, { useState, useEffect } from "react";
-import Forgot from "./form/forgot";
-import Login from "./form/ingreso";
-import Register from "./form/registro";
-import Home from "./Home";
+import './App.css';
+import React, {useState} from 'react';
+import Login from './form/Login';
+import Register from './form/Register';
+import Forgot from './form/Forgot';
 
 function App() {
-  const [page, setPage] = useState("login");
-  const [token, setToken] = useState();
 
-  useEffect(() => {
-    const auth = localStorage.getItem("auth_token");
-    setToken(auth);
-  }, [token]);
+  const [page, setPage]= useState("login")
 
   const chosePage = () => {
     if (page === "login") {
@@ -26,21 +20,13 @@ function App() {
     }
   };
 
-  const pages = () => {
-    if (token == null) {
-      return (
-        <div className="min-h-screen bg-yellow-400 flex justify-center items-center">
-          <div className="py-12 px-12 bg-white rounded-2xl shadow-xl z-20">
-            {chosePage()}
-          </div>
-        </div>
-      );
-    } else {
-      return <Home />;
-    }
-  };
-
-  return <React.Fragment>{pages()}</React.Fragment>;
+  return (
+    <div className="min-h-screen bg-purple-800 flex justify-center items-center">
+      <div className="py-12 px-12 bg-white rounded-2xl shadow-xl z-20">
+        {chosePage()}
+      </div>
+    </div>
+  );
 }
 
 export default App;

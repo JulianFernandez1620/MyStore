@@ -1,6 +1,11 @@
 import uvicorn
 from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
 from app.config import db
+
+origins = [
+    "https://localhost:3000"
+]
 
 def init_app():
     db.init()
@@ -9,6 +14,14 @@ def init_app():
         title= "MyStore",
         description= "Backend for login and password authentication",
         version= "0.1.0"
+    )
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods= ["*"],
+        allow_headers= ["*"]
     )
 
     @app.on_event("startup")

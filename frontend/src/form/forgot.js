@@ -1,6 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
-export default function Forgot() {
+export default function Forgot(props) {
     return (
         <React.Fragment>
             <div>
@@ -31,9 +32,16 @@ export default function Forgot() {
                     >
                         Actualizar contraseña
                     </button>
-                    <p className="mt-4 text-sm">
-                        Ya posee una cuenta?
-                    </p>
+                    <Link
+                        to="/?login"
+                        onClick={() => {
+                            props.setPage("login");
+                        }}
+                    >
+                        <p>
+                            Ya tiene una cuenta existente? <span className='underline cursor-pointer'>Ingresar</span>
+                        </p>
+                    </Link>
                 </div>
             </form>
         </React.Fragment>

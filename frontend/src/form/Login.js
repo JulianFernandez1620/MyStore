@@ -1,11 +1,15 @@
-import React from 'react'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Login(props) {
+
+    // const[loginform,setloginform] = useState()
+
     return (
         <React.Fragment>
             <div>
                 <h1 className='text-3xl font-bold text-center mb-4 cursor-pointer'>
-                    Welcome to MyStore
+                    Bienvenid@ a MyStore
                 </h1>
                 <p className='w-80 text-center text-sm mb-8 font-semibold text-gray-700 tracking-wide cursor-pointer mx-auto'>
                     Ingrese sus datos de usuario
@@ -21,8 +25,25 @@ export default function Login(props) {
                         Ingresar
                     </button>
                 </div>
-                <p>¿No tienes una cuenta? <span className='underline cursor-pointer'>Registrate</span></p>
-                <p>¿No recuerdas la clave? <span className='underline cursor-pointer'>Restablece tu contraseña</span></p>
+                <p>¿No tienes una cuenta?{""}
+                    <Link
+                        to="/?register"
+                        onClick={() => {
+                            props.setPage("register");
+                        }}
+                    >
+                        <span className="underline cursor-pointer">Registrar</span>
+                    </Link>{" "}
+                    <p>Has olvidado la cuenta?</p>
+                    <Link
+                        to="/?forgot"
+                        onClick={() => {
+                            props.setPage("forgot");
+                        }}
+                    >
+                        <span className="underline cursor-pointer">Restablezca su contraseña</span>
+                    </Link>
+                </p>
             </form>
         </React.Fragment>
     )

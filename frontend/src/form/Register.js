@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 
-export default function Register() {
+
+export default function Register(props) {
 
     const options = [
         { value: "", label: "Seleccione su rol dentro de la plataforma" },
@@ -55,9 +57,17 @@ export default function Register() {
                     <button type='submit' className='py-3 w-64 text-xl text-white bg-purple-700 rounded-2xl hover:bg-purple-500 active:bg-purple-800 outline-none self-center'>
                         Registrar
                     </button>
-                    <p>
-                        Ya tiene una cuenta existente? <span className='underline cursor-pointer'>Ingresar</span>
-                    </p>
+                    <Link
+                        to="/?login"
+                        onClick={() => {
+                            props.setPage("login");
+                        }}
+                    >
+                        <p>
+                            Ya tiene una cuenta existente? <span className='underline cursor-pointer'>Ingresar</span>
+                        </p>
+                    </Link>
+                    
                 </div>
             </form>
         </React.Fragment>

@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from app.schema import ResponseSchema, RegisterSchema, LoginSchema, ForgotPasswordSchema
 from app.service.auth_service import AuthService
 
@@ -12,8 +11,8 @@ async def register(request_body: RegisterSchema):
     return ResponseSchema(detail="Successfully save data!")
 
 @router.post("/login", response_model=ResponseSchema)
-async def login(requset_body: LoginSchema):
-    token = await AuthService.logins_service(requset_body)
+async def login(request_body: LoginSchema):
+    token = await AuthService.logins_service(request_body)
     return ResponseSchema(detail="Successfully login", result={"token_type": "Bearer", "access_token": token})
 
 

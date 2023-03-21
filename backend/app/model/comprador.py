@@ -6,7 +6,7 @@ from app.model.compar import Compra
 class Comprador(SQLModel, TimeMixin, table=True):
     __tablename__ = "comprador"
 
-    id_comprador        : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_comprador        : Optional[int] = Field(None, primary_key=True,nullable=False)
     direccion           : str
     telefono            : int
     historial_compras   : List[Compra]

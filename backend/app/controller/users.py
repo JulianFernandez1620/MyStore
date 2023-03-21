@@ -6,14 +6,14 @@ from fastapi.security import HTTPAuthorizationCredentials
 from app.service.usuario import UsuarioService
 
 router = APIRouter(
-    prefix="/usuarios",
+    prefix="/usuario",
     tags=['usuario'],
     dependencies=[Depends(JWTBearer())]
 )
 
 
-@router.get("/", response_model=ResponseSchema, response_model_exclude_none=True)
+@router.post("/", response_model=ResponseSchema, response_model_exclude_none=True)
 async def get_user_profile(credentials: HTTPAuthorizationCredentials = Security(JWTBearer())):
     token = JWTRepo.extract_token(credentials)
-    result = await UserService.get_user_profile(token['nombre'])
+    result = await UsuarioService.get_user_profile(token['nombre'])
     return ResponseSchema(detail="Successfully fetch data!", result=result)

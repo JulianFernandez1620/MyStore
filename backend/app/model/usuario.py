@@ -9,7 +9,7 @@ class Tipo(str, Enum):
 
 class Usuario(SQLModel, TimeMixin, table=True):
     __tablename__ = "usuario"
-    id          : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id          : int = Field(None, primary_key=True,nullable=False)
     nombre      : str
     correo      : str
     contrasena  : str

@@ -28,7 +28,7 @@ export default function Forgot(props) {
                 <div className="text-center mt-6">
                     <button
                         type="submit"
-                        className="py-3 w-64 text-xl text-white bg-yellow-400 rounded-2xl hover:bg-yellow-300 active:bg-yellow-500 outline-none"
+                        className="py-3 w-64 text-xl text-white bg-purple-700 rounded-2xl hover:bg-purple-500 active:bg-purple-800 outline-none"
                     >
                         Actualizar contraseña
                     </button>

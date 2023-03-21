@@ -10,6 +10,6 @@ from app.model.productos import Producto
 class Carrito_compra(SQLModel, TimeMixin, table=True):
     __tablename__ = "carrito_compras"
     
-    id_carrito      : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_carrito      : Optional[int] = Field(None, primary_key=True,nullable=False)
     productos       : List[Producto]
     id_comprador    : Optional[int] = Field(default=None, foreign_keys=True ="comprador.id_comprador")

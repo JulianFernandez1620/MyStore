@@ -2,6 +2,8 @@ import uvicorn
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import db
+from app.controller import authentication, users
+from app.service.auth_service import generate_role
 
 origins = [
     "https://localhost:3000"
@@ -20,25 +22,25 @@ def init_app():
         CORSMiddleware,
         allow_origins=origins,
         allow_credentials=True,
-        allow_methods= ["*"],
-        allow_headers= ["*"]
+        allow_methods=["*"],
+        allow_headers=["*"]
     )
 
     @app.on_event("startup")
     async def starup():
         await db.create_all()
-        #await generar_tipo()
+        generate_role()
     
     @app.on_event("shutdown")
     async def shutdown():
         await db.close()
     
-    return app
-
-    from app.controller import authentication, users
-
+    
     app.include_router(authentication.router)
     app.include_router(users.router)
+    
+    return app
+
 app = init_app()
 
 def start():

@@ -16,7 +16,7 @@ class TipoPlantilla(str, Enum):
 class Plantilla(SQLModel, TimeMixin, table=True):
     __tablename__ = "Plantilla"
     
-    id_plantilla : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_plantilla : Optional[int] = Field(None, primary_key=True,nullable=False)
     nombre      : str 
     descripción : str
     secciones   : List[Object]

@@ -10,7 +10,7 @@ from app.model.usuario import Tipo
 T = TypeVar('T')
 
 # get root logger
-logger = logging.getLogger(__nombre__)
+logger = logging.getLogger(__name__)
 
 
 class RegisterSchema(BaseModel):

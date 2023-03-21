@@ -12,7 +12,7 @@ class estado(str, Enum):
 
 class Venta(SQLModel, TimeMixin, table=True):
     __tablename__ = "venta"
-    id_venta        : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_venta        : Optional[int] = Field(None, primary_key=True,nullable=False)
     fecha           : datetime
     total           : int
     estado          : estado

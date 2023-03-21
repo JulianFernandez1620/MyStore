@@ -17,11 +17,11 @@ class estadoSuscripcion(str,Enum):
 class Suscripcion(SQLModel, TimeMixin, table=True):
     __tablename__ = "suscripcion"
     
-    id_suscripcion  : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_suscripcion  : Optional[int] = Field(None, primary_key=True,nullable=False)
     fecha_inicio    : datetime 
     fecha_final     : datetime
     precio          : float
     tipo            : TipoSuscripcion
     estado          : estadoSuscripcion
     producto        : Producto
-    id_usuario      : Optional[int] = Field(default=None, foreign_key="usuario.id", nullnable=False)
+    id_usuario      : Optional[int] = Field(default=None, foreign_key="usuario.id", nullable=False)

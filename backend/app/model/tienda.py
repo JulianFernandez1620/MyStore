@@ -11,7 +11,7 @@ from app.model.vendedor import Vendedor
 class Tienda(SQLModel, TimeMixin, table=True):
     __tablename__ = "tienda"
     
-    id_tienda       : Optional[int] = Field(None, primary_key=True,nullnable=False)
+    id_tienda       : Optional[int] = Field(None, primary_key=True,nullable=False)
     nombre_tienda   : str 
     direccion       : str
     vendedor        : Vendedor

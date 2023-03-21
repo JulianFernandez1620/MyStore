@@ -7,10 +7,10 @@ class Envio(SQLModel, TimeMixin, table=True):
     __tablename__ = "envio"
     
     id_envio            : Optional[int] = Field(None, primary_key=True,nullnable=False)
-    direccion_entrega   : Optional[str] = Field(default=None, foreign_key="comprador.direccion", nullnable=False)
-    direccion_emision   : Optional[str] = Field(default=None, foreign_key="tienda.direccion", nullnable=False)
+    direccion_entrega   : Optional[str] = Field(default=None, foreign_key="comprador.direccion", nullable=False)
+    direccion_emision   : Optional[str] = Field(default=None, foreign_key="tienda.direccion", nullable=False)
     fecha_envio         : datetime
     fecha_entrega       : datetime
     transportista       : str
     precio              : float
-    id_producto         : Optional[int] = Field(default=None, foreign_key="producto.id_producto", nullnable=False)
+    id_producto         : Optional[int] = Field(default=None, foreign_key="producto.id_producto", nullable=False)

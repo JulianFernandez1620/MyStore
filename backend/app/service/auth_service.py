@@ -5,8 +5,8 @@ from fastapi import HTTPException
 
 from passlib.context import CryptContext
 from app.schema import RegisterSchema
-from app.model import Usuario
-from app.repository.role import UsuarioRepository
+from app.model.usuario import Usuario
+from app.repository.usuario import UsuarioRepository
 from app.schema import LoginSchema, ForgotPasswordSchema
 from app.repository.auth_repo import JWTRepo
 
@@ -21,19 +21,19 @@ class AuthService:
     async def register_service(register: RegisterSchema):
 
         #Create a uuid for users
-        _usuario_id = str(uuid.uuid4())
+        _usuario_id = str(uuid4())
 
         # birth_date = datetime.strptime(register.birth, '%d-%m-%Y') 
         # Estructura para en el futuro cambiar fechas de string a ese formato
 
         _usuario = Usuario(id=_usuario_id, nombre=register.nombre, correo=register.correo, contrasena=pwd_context.hash(register.contrasena),tipo=register.tipo)
 
-        _nombre = await UsersRepository.find_by_username(register.nombre)
+        _nombre = await UsuarioRepository.find_by_username(register.nombre)
         if _nombre:
             raise HTTPException(
                 status_code=400, detail="Nombre de usuario ya existente!")
 
-        _email = await UsersRepository.find_by_email(register.correo)
+        _email = await UsuarioRepository.find_by_email(register.correo)
         if _email:
             raise HTTPException(
                 status_code=400, detail="Correo ya registrado!")
@@ -52,7 +52,7 @@ class AuthService:
         raise HTTPException(status_code=404, detail="Nombre de usuario no encontrado")
     
     async def generate_role():
-    _role = await RoleRepository.find_by_list_role_name(["vendedor", "comprador"])
-    if not _role:
-        await RoleRepository.create_list(
-            [Role(id=str(uuid4()), role_name="vendedor"), Role(id=str(uuid4()), role_name="comprador")])
+        _role = await RoleRepository.find_by_list_role_name(["vendedor", "comprador"])
+        if not _role:
+            await RoleRepository.create_list(
+                [Role(id=str(uuid4()), role_name="vendedor"), Role(id=str(uuid4()), role_name="comprador")])

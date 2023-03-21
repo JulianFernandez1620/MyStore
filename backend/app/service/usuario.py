@@ -1,5 +1,6 @@
 from sqlalchemy.future import select
-from app.model import Usuario, Vendedor
+from app.model.usuario import Usuario
+# from app.model.vendedor import Vendedor
 from app.config import db
 
 class UsuarioService:
@@ -8,8 +9,5 @@ class UsuarioService:
     async def get_user_profile(nombre:str):
         query = select(Usuario.username, 
                         Usuario.correo, 
-                        Usuario.tipo, 
-                        Vendedor.nombre_tienda,
-                        Vendedor.rues,
-                        Vendedor.id_vendedor).join_from(Usuario,Vendedor).where(Vendedor.id_vendedor == Usuario.id)
+                        Usuario.tipo)
         return(await db.execute(query)).mappings().one()

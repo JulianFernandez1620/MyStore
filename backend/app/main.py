@@ -29,7 +29,7 @@ def init_app():
     @app.on_event("startup")
     async def starup():
         await db.create_all()
-        generate_role()
+        # generate_role()
     
     @app.on_event("shutdown")
     async def shutdown():

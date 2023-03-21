@@ -51,8 +51,8 @@ class AuthService:
             return JWTRepo(data={"nombre": _nombre.nombre}).generate_token()
         raise HTTPException(status_code=404, detail="Nombre de usuario no encontrado")
     
-    async def generate_role():
-        _role = await RoleRepository.find_by_list_role_name(["vendedor", "comprador"])
-        if not _role:
-            await RoleRepository.create_list(
-                [Role(id=str(uuid4()), role_name="vendedor"), Role(id=str(uuid4()), role_name="comprador")])
+async def generate_role():
+    _role = await UsuarioRepository.find_by_list_role_name(["vendedor", "comprador"])
+    if not _role:
+        await UsuarioRepository.create_list(
+            [Role(id=str(uuid4()), role_name="vendedor"), Role(id=str(uuid4()), role_name="comprador")])

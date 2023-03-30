@@ -5,7 +5,8 @@ from typing import TypeVar, Optional
 
 from pydantic import BaseModel, validator
 from sqlalchemy import false
-from app.model.usuario import Tipo
+# from app.model.person import Sex
+
 
 T = TypeVar('T')
 
@@ -13,28 +14,8 @@ T = TypeVar('T')
 logger = logging.getLogger(__name__)
 
 
-class RegisterSchema(BaseModel):
-    nombre : str
-    correo      : str
-    contrasena  : str
-    tipo        : Tipo
-
-class LoginSchema(BaseModel):
-    nombre: str
-    contrasena: str
-
-
-class ForgotPasswordSchema(BaseModel):
-    correro: str
-    contrasena_nueva: str
-
-
-class DetailSchema(BaseModel):
-    status: str
-    message: str
-    result: Optional[T] = None
-
-
-class ResponseSchema(BaseModel):
-    detail: str
-    result: Optional[T] = None
+class User(BaseModel):
+    name: str
+    email: str
+    cellphone : str
+    password: str

@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
+from typing import Optional
 
 class Producto(SQLModel, TimeMixin, table=True):
     __tablename__ = "producto"
@@ -10,4 +11,4 @@ class Producto(SQLModel, TimeMixin, table=True):
     nombre_producto : str 
     descripcion     : str
     precio          : float
-    ilustracion     : List[image]
+    ilustracion     : list[str]

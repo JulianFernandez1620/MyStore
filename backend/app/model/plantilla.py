@@ -2,7 +2,8 @@ from datetime import datetime
 from sqlalchemy import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
-from app.model.productos import Producto
+from app.model.producto import Producto
+from typing import Optional
 
 # esto es un ejemplo de posibles suscripciones
 
@@ -17,9 +18,9 @@ class Plantilla(SQLModel, TimeMixin, table=True):
     __tablename__ = "Plantilla"
     
     id_plantilla : Optional[int] = Field(None, primary_key=True,nullable=False)
-    nombre      : str 
-    descripción : str
-    secciones   : List[Object]
-    diseno      : string
-    tipo        : TipoPlantilla
-    url         : Optional[str]
+    nombre       : str 
+    descripción  : str
+    secciones    : str
+    diseno       : str
+    tipo         : TipoPlantilla
+    url          : str

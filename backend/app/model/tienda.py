@@ -2,8 +2,9 @@ from datetime import datetime
 from sqlalchemy import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
-from app.model.productos import Producto
+from app.model.producto import Producto
 from app.model.vendedor import Vendedor
+from typing import Optional
 
 # esto es un ejemplo de posibles suscripciones
 
@@ -14,5 +15,5 @@ class Tienda(SQLModel, TimeMixin, table=True):
     id_tienda       : Optional[int] = Field(None, primary_key=True,nullable=False)
     nombre_tienda   : str 
     direccion       : str
-    vendedor        : Vendedor
-    productos       : List[Producto]
+    vendedor        : str
+    producto        : str

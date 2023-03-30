@@ -1,7 +1,8 @@
 from sqlalchemy import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
-from app.model.compar import Compra
+from app.model.compra import Compra
+from typing import Optional
 
 class Comprador(SQLModel, TimeMixin, table=True):
     __tablename__ = "comprador"
@@ -9,4 +10,4 @@ class Comprador(SQLModel, TimeMixin, table=True):
     id_comprador        : Optional[int] = Field(None, primary_key=True,nullable=False)
     direccion           : str
     telefono            : int
-    historial_compras   : List[Compra]
+    historial_compras   : str

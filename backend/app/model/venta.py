@@ -3,6 +3,8 @@ from sqlalchemy import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
 from app.model.producto import Producto
+from typing import Optional
+
 class estado(str, Enum):
     pendiente   = "Pendiente de envio"
     transito    = "Esta siendo transportado"
@@ -16,5 +18,5 @@ class Venta(SQLModel, TimeMixin, table=True):
     fecha           : datetime
     total           : int
     estado          : estado
-    id_vendedor     : Optional[int] = Field(default=None, foreign_key="vendedor.id_vendedor", nullnable=False)
-    productos       : list[Producto]
+    id_vendedor     : Optional[int] = Field(default=None, foreign_key="vendedor.id_vendedor", nullable=False)
+    producto        : str

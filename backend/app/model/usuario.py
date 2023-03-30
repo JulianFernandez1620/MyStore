@@ -1,16 +1,11 @@
-from sqlalchemy import Enum
-from sqlmodel import SQLModel, Field, Relationship
-from app.model.mixins import TimeMixin
+from sqlalchemy import Column, Integer, String
+from database import Base
 
+class Usuario(Base):
+    __tablename__ = "usuarios"
 
-class Tipo(str, Enum):
-    VENDEDOR    = "vendedor"
-    COMPRADOR   = "comprador"
-
-class Usuario(SQLModel, TimeMixin, table=True):
-    __tablename__ = "usuario"
-    id          : int = Field(None, primary_key=True,nullable=False)
-    nombre      : str
-    correo      : str
-    contrasena  : str
-    tipo        : Tipo  
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    cellphone = Column(String)
+    email = Column(String, unique=True, index=True)
+    password = Column(String)  

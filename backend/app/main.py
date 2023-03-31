@@ -266,7 +266,7 @@ def init_app():
 
     @app.post("/devolucion")
     async def crear_devolucion(devolucion: Devolucion):
-        query = "INSERT INTO devolucion (fecha_solicitud, id_producto, id_vendedor, id_comprador, razon, id_envio) VALUES ($1::date, $2::integer, $3::integer, $4::integer, $5::text $6::integer) RETURNING id, fecha_solicitud, id_producto, id_vendedor, id_comprador, razon, id_envio"
+        query = "INSERT INTO devolucion (fecha_solicitud, id_producto, id_vendedor, id_comprador, razon, id_envio) VALUES ($1::date, $2::integer, $3::integer, $4::integer, $5::text, $6::integer) RETURNING id, fecha_solicitud, id_producto, id_vendedor, id_comprador, razon, id_envio"
         values = (devolucion.fecha_solicitud, devolucion.id_producto, devolucion.id_vendedor, devolucion.id_comprador, devolucion.razon, devolucion.id_envio)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "fecha_solicitud": row[1], "id_producto": row[2], "id_vendedor": row[3], "id_comprador": row[4], "razon" : row[5], "id_envio" : row[6]}
@@ -345,7 +345,7 @@ def init_app():
     @app.post("/lista-de-deseos")
     async def crear_lista_de_deseos(lista: ListaDeseos):
         productos = lista.productos.split(", ")
-        query = "INSERT INTO lista_deseos (productos, id_comprador) VALUES ($1::text, $2::integer) RETURNING id, productos, id_comprador"
+        query = "INSERT INTO lista_deseos (productos, id_comprador) VALUES ($1::text[], $2::integer) RETURNING id, productos, id_comprador"
         values = (productos,lista.id_comprador)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "productos": row[1], "id_comprador": row[2]}
@@ -385,8 +385,9 @@ def init_app():
 
     @app.post("/plantila")
     async def crear_plantilla(plantilla: Plantilla):
-        query = "INSERT INTO plantilla (nombre, descripcion, secciones, diseño, tipo, url) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text, $6::text) RETURNING id, nombre, descripcion, secciones, diseño, tipo, url"
-        values = (plantilla.nombre,plantilla.descripcion, plantilla.secciones, plantilla.diseño, plantilla.tipo, plantilla.url)
+        secciones = plantilla.secciones.split(", ")
+        query = "INSERT INTO plantilla (nombre, descripcion, secciones, diseño, tipo, url) VALUES ($1::text, $2::text, $3::text[], $4::text, $5::text, $6::text) RETURNING id, nombre, descripcion, secciones, diseño, tipo, url"
+        values = (plantilla.nombre,plantilla.descripcion, secciones, plantilla.diseño, plantilla.tipo, plantilla.url)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "nombre": row[1], "descripcion": row[2], "secciones": row[3], "diseño": row[4], "tipo": row[5], "url": row[6]}
 
@@ -528,7 +529,7 @@ def init_app():
     @app.post("/tienda")
     async def crear_tienda(tienda: Tienda):
         productos = tienda.productos.split(", ")
-        query = "INSERT INTO tienda (nombre, direccion, id_vendedor, productos) VALUES ($1::text, $2::text, $3::integer, $4::text) RETURNING id, nombre, direccion, id_vendedor, productos"
+        query = "INSERT INTO tienda (nombre, direccion, id_vendedor, productos) VALUES ($1::text, $2::text, $3::integer, $4::text[]) RETURNING id, nombre, direccion, id_vendedor, productos"
         values = (tienda.nombre, tienda.direccion, tienda.id_vendedor, productos)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "nombre": row[1], "direccion": row[2], "id_vendedor": row[3], "productos": row[4]}
@@ -569,7 +570,7 @@ def init_app():
     @app.post("/venta")
     async def crear_venta(venta: Venta):
         productos = venta.productos.split(", ")
-        query = "INSERT INTO venta (fecha, total, estado, id_vendedor, productos) VALUES ($1::date, $2::double, $3::text, $4::integer,$5::text) RETURNING id, fecha, estado, id_vendedor, productos"
+        query = "INSERT INTO venta (fecha, total, estado, id_vendedor, productos) VALUES ($1::date, $2::integer, $3::text, $4::integer,$5::text[]) RETURNING id, fecha, total, estado, id_vendedor, productos"
         values = (venta.fecha,venta.total,venta.estado,venta.id_vendedor, productos)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "fecha": row[1], "total": row[2], "estado": row[3], "id_vendedor": row[4], "productos": row[5]}

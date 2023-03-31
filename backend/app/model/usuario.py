@@ -1,11 +1,12 @@
-from sqlalchemy import Column, Integer, String
-from database import Base
+from pydantic import BaseModel
 
-class Usuario(Base):
-    __tablename__ = "usuarios"
+class Tipo(str):
+    VENDEDOR    = "vendedor"
+    COMPRADOR   = "comprador"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    cellphone = Column(String)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)  
+class User(BaseModel):
+    name: str
+    email: str
+    cellphone : str
+    password: str
+    tipo        : Tipo 

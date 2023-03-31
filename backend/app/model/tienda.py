@@ -1,19 +1,8 @@
-from datetime import datetime
-from sqlalchemy import Enum
-from sqlmodel import SQLModel, Field, Relationship
-from app.model.mixins import TimeMixin
-from app.model.producto import Producto
-from app.model.vendedor import Vendedor
-from typing import Optional
+from pydantic import BaseModel
+from datetime import date
 
-# esto es un ejemplo de posibles suscripciones
-
-
-class Tienda(SQLModel, TimeMixin, table=True):
-    __tablename__ = "tienda"
-    
-    id_tienda       : Optional[int] = Field(None, primary_key=True,nullable=False)
-    nombre_tienda   : str 
-    direccion       : str
-    vendedor        : str
-    producto        : str
+class Tienda(BaseModel):
+    nombre : str
+    direccion : str
+    id_vendedor : int
+    productos : str

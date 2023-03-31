@@ -1,22 +1,9 @@
-from datetime import datetime
-from sqlalchemy import Enum
-from sqlmodel import SQLModel, Field, Relationship
-from app.model.mixins import TimeMixin
-from app.model.producto import Producto
-from typing import Optional
-
-class estado(str, Enum):
-    pendiente   = "Pendiente de envio"
-    transito    = "Esta siendo transportado"
-    cancelado   = "Cancelado"
-    finalizado  = "Finalizado"
+from pydantic import BaseModel
+from datetime import date
 
 
-class Compra(SQLModel, TimeMixin, table=True):
-    __tablename__ = "compra"
-    id_compra       : Optional[int] = Field(None, primary_key=True,nullable=False)
-    fecha           : datetime
-    total           : int
-    estado          : estado
-    id_comprador    : Optional[int] = Field(default=None, foreign_key = "comprador.id_comprador")
-    producto        : str
+class Compra(BaseModel):
+    fecha : date
+    total : float
+    estado : str
+    id_comprador : int

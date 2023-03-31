@@ -1,11 +1,9 @@
 from sqlalchemy import Enum
-from sqlmodel import SQLModel, Field, Relationship
 from app.model.mixins import TimeMixin
-from typing import Optional
+from pydantic import BaseModel
 
-class Vendedor(SQLModel, TimeMixin, table=True):
-    __tablename__ = "vendedor"
-    id_vendedor         : Optional[int] = Field(None, primary_key=True,nullable=False)
-    nombre_tienda       : str
-    rues                : int
-    historial_ventas    : str
+class Vendedor(BaseModel):
+    nombre_tienda   : str
+    rues            : int
+    historial_ventas: str
+    nombre          : str

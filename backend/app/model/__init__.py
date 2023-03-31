@@ -9,10 +9,6 @@ from .mixins import TimeMixin
 # from .producto import Producto
 # from .suscripcion import Suscripcion
 # from .tienda import Tienda
-# from .usuario import Usuario
+from .usuario import User
 # from .vendedor import Vendedor
 # from .venta import Venta
-from .users import Users
-from .user_role import UsersRole
-from .role import Role
-from .person import Person

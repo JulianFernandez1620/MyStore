@@ -1,46 +1,23 @@
-import "./App.css";
-import React, { useState, useEffect } from "react";
-import Forgot from "./form/Forgot";
-import Login from "./form/Login";
-import Register from "./form/Register";
-import Home from "./Home";
+import React, { useState } from 'react';
+import CrearUsuario from './components/CrearUsuario';
+import LeerUsuario from './components/LeerUsuario';
 
 function App() {
-  const [page, setPage] = useState("login");
-  const [token, setToken] = useState();
+  const [currentPage, setCurrentPage] = useState("leer");
 
-  useEffect(() => {
-    const auth = localStorage.getItem("auth_token");
-    setToken(auth);
-  }, [token]);
-
-  const chosePage = () => {
-    if (page === "login") {
-      return <Login setPage={setPage} />;
-    }
-    if (page === "forgot") {
-      return <Forgot setPage={setPage} />;
-    }
-    if (page === "register") {
-      return <Register setPage={setPage} />;
-    }
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
-  const pages = () => {
-    if (token == null) {
-      return (
-        <div className="min-h-screen bg-purple-700 flex justify-center items-center">
-          <div className="py-12 px-12 bg-white rounded-2xl shadow-xl z-20">
-            {chosePage()}
-          </div>
-        </div>
-      );
-    } else {
-      return <Home />;
-    }
-  };
-
-  return <React.Fragment>{pages()}</React.Fragment>;
+  return (
+    <div className="min-h-screen bg-purple-700 flex justify-center items-center">
+      <nav className="py-12 px-12 bg-white rounded-2xl shadow-xl z-20">
+        <button onClick={() => handlePageChange("leer")}>Leer usuarios</button>
+        <button onClick={() => handlePageChange("crear")}>Crear usuario</button>
+      </nav>
+      {currentPage === "leer" ? <LeerUsuario /> : <CrearUsuario />}
+    </div>
+  );
 }
 
 export default App;

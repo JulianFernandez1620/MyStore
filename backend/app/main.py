@@ -22,7 +22,8 @@ from app.model.vendedor import Vendedor
 from app.model.venta import Venta
 
 origins= [
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
 ]
 app = FastAPI()
 def init_app():
@@ -38,7 +39,8 @@ def init_app():
         allow_origins=origins,
         allow_credentials=True,
         allow_methods=["*"],
-        allow_headers=["*"]
+        allow_headers=["*"],
+        expose_headers=["Content-Type"]
     )
 
     @app.on_event("startup")
@@ -65,7 +67,7 @@ def init_app():
 
     @app.post("/users")
     async def crear_usuario(user: User):
-        query = "INSERT INTO users (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, password"
+        query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, password"
         values = (user.name, user.email, user.cellphone, user.password, user.tipo)
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "name": row[1], "email": row[2], "cellphone": row[3], "password": row[4]}

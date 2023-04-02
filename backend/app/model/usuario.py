@@ -10,3 +10,7 @@ class User(BaseModel):
     cellphone : str
     password: str
     tipo        : Tipo 
+
+class UserLogin(BaseModel):
+    email    : str
+    password: str

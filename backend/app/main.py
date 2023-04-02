@@ -6,6 +6,8 @@ from tkinter import filedialog
 from tkinter import *
 import base64
 from PIL import Image as io
+import hashlib
+import logging
 
 from app.model.carrito_compra import Carrito
 from app.model.compra import Compra
@@ -17,7 +19,7 @@ from app.model.plantilla import Plantilla
 from app.model.producto import Producto
 from app.model.suscripcion import Suscripcion
 from app.model.tienda import Tienda
-from app.model.usuario import User
+from app.model.usuario import User, UserLogin
 from app.model.vendedor import Vendedor
 from app.model.venta import Venta
 
@@ -63,14 +65,52 @@ def init_app():
     async def shutdown():
         await app.db_connection.close()
 
-    # Bloque de funciones CRUD para usuario #
+    # Bloque de funciones de primer necesidad #
 
-    @app.post("/users")
-    async def crear_usuario(user: User):
-        query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, password"
-        values = (user.name, user.email, user.cellphone, user.password, user.tipo)
+    @app.post("/register")
+    async def register(user: User):
+        # Verificar si el correo electrónico ya existe en la base de datos
+        query = "SELECT email FROM usuario WHERE email = $1"
+        row = await app.db_connection.fetchrow(query, user.email)
+        if row:
+            return {"message": "El correo electrónico ya está registrado"}
+
+        # Almacenar el nuevo usuario en la base de datos
+        password_bytes = user.password.encode('utf-8')
+        salt = hashlib.sha256(password_bytes).hexdigest().encode('utf-8')
+        hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
+        hashed_password = salt + hashed_bytes
+
+        # Convertir el hash a base64
+        hashed_password_b64 = base64.b64encode(hashed_password).decode('utf-8')
+
+        query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, tipo"
+        values = (user.name, user.email, user.cellphone, hashed_password_b64, user.tipo)
         row = await app.db_connection.fetchrow(query, *values)
-        return {"id": row[0], "name": row[1], "email": row[2], "cellphone": row[3], "password": row[4]}
+
+        return {"id": row[0], "name": row[1], "email": row[2], "cellphone": row[3], "tipo": row[4]}
+
+    @app.post("/login")
+    async def login(user: UserLogin):
+        query = "SELECT id, name, password FROM usuario WHERE email = $1"
+        row = await app.db_connection.fetchrow(query, user.email)
+        if row:
+            user_id, name, hashed_password_b64 = row
+            password_bytes = user.password.encode('utf-8')
+            salt = base64.b64decode(hashed_password_b64)[:64]
+            hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
+            hashed_input_password = salt + hashed_bytes
+            if hashed_password_b64.encode('utf-8') == base64.b64encode(hashed_input_password):
+                return {"id": user_id, "name": name, "email": user.email}
+            else:
+                return {"message": "Contraseña incorrecta"}
+        else:
+            return {"message": "Usuario no encontrado"}
+
+
+
+
+    # Bloque de funciones CRUD para usuario #
 
     @app.get("/users/{user_id}")
     async def leer_usuario(user_id: int):

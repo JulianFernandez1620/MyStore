@@ -1,20 +1,15 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/ReactToastify.min.css";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+import axios from 'axios';
+import './index.css';
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+axios.defaults.baseURL = 'http://localhost:8000';
+
+ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-    <ToastContainer />
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
 );
-
-reportWebVitals();

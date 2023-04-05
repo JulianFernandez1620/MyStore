@@ -5,4 +5,4 @@ class Producto(BaseModel):
     nombre : str
     descripcion : str
     precio : float
-    ilustracion : bytes
+    ilustracion : str

@@ -467,17 +467,17 @@ def init_app():
 
     # Bloque de funciones CRUD para producto #
 
-    # @app.post("/producto")
-    # async def crear_producto(producto: Producto):
-    #     with open(producto.ilustracion, "rb") as imagen_file:
-    #         # Lee los datos binarios de la imagen
-    #         datos_binarios = imagen_file.read()
-    #     # Convierte los datos binarios en una cadena base64
-    #     cadena_base64 = base64.b64encode(datos_binarios).decode('utf-8')
-    #     query = "INSERT INTO producto (nombre, descripcion, precio, ilustracion) VALUES ($1::text, $2::text, $3::numeric, $4::text) RETURNING id, nombre, descripcion, precio, ilustracion"
-    #     values = (producto.nombre, producto.descripcion, producto.precio, cadena_base64)
-    #     row = await app.db_connection.fetchrow(query, *values)
-    #     return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": row[4]}
+    @app.post("/producto")
+    async def crear_producto(producto: Producto):
+        with open(producto.ilustracion, "rb") as imagen_file:
+            # Lee los datos binarios de la imagen
+            datos_binarios = imagen_file.read()
+        # Convierte los datos binarios en una cadena base64
+        cadena_base64 = base64.b64encode(datos_binarios).decode('utf-8')
+        query = "INSERT INTO producto (nombre, descripcion, precio, ilustracion) VALUES ($1::text, $2::text, $3::numeric, $4::text) RETURNING id, nombre, descripcion, precio, ilustracion"
+        values = (producto.nombre, producto.descripcion, producto.precio, cadena_base64)
+        row = await app.db_connection.fetchrow(query, *values)
+        return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": row[4]}
 
     @app.post("/producto")
     async def crear_producto(producto: Producto):
@@ -486,18 +486,31 @@ def init_app():
         row = await app.db_connection.fetchrow(query, *values)
         return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3]}
 
-    # @app.get("/producto/{producto_id}")
-    # async def leer_producto(producto_id: int):
-    #     query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto WHERE id = $1"
-    #     row = await app.db_connection.fetchrow(query, producto_id)
-    #     if row:
-    #         # Convierte la cadena base64 de la imagen en datos binarios
-    #         datos_binarios = base64.b64decode(row[4])
-    #         # Crea un objeto de imagen a partir de los datos binarios
-    #         imagen = Image.open(io.BytesIO(datos_binarios))
-    #         return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen}
-    #     else:
-    #         return {"message": "Producto no encontrado"}
+    @app.get("/producto/{producto_id}")
+    async def leer_producto(producto_id: int):
+        query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto WHERE id = $1"
+        row = await app.db_connection.fetchrow(query, producto_id)
+        if row:
+            # Convierte la cadena base64 de la imagen en datos binarios
+            datos_binarios = base64.b64decode(row[4])
+            # Crea un objeto de imagen a partir de los datos binarios
+            imagen = Image.open(io.BytesIO(datos_binarios))
+            return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen}
+        else:
+            return {"message": "Producto no encontrado"}
+
+    @app.get("/productos")
+    async def leer_productos():
+        query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto"
+        rows = await app.db_connection.fetch(query)
+        productos = []
+        for row in rows:
+            # Convierte la cadena base64 de la imagen en datos binarios
+            datos_binarios = base64.b64decode(row[4])
+            # Crea un objeto de imagen a partir de los datos binarios
+            imagen = Image.open(io.BytesIO(datos_binarios))
+            productos.append({"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen})
+        return productos
 
     @app.get("/producto/{producto_id}")
     async def leer_producto(producto_id: int):

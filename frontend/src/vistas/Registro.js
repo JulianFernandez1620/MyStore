@@ -71,13 +71,13 @@ const Registro = () => {
     };
 
     return (
-        <div className="max-w-md mx-auto ">
+        <div className="max-w-md  mx-auto bg-purple-500">
             <h1 className="text-2xl font-bold text-center mb-5">
                 Registro
             </h1>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                    <label htmlFor="name" className="block text-purple-700 font-bold mb-2">
+                    <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
                         Nombre
                     </label>
                     <input type="text" id="name" className={`border ${errors.name ? "border-red-500" : "border-gray-400"} py-2 px-3 rounded-lg w-full focus:outline-none focus:ring`} required value={formData.name} onChange={handleChange} />

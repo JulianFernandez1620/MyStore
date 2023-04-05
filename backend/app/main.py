@@ -94,6 +94,7 @@ def init_app():
     async def login(user: UserLogin):
         query = "SELECT id, name, password FROM usuario WHERE email = $1"
         row = await app.db_connection.fetchrow(query, user.email)
+        print (row)
         if row:
             user_id, name, hashed_password_b64 = row
             password_bytes = user.password.encode('utf-8')
@@ -102,6 +103,7 @@ def init_app():
             hashed_input_password = salt + hashed_bytes
             if hashed_password_b64.encode('utf-8') == base64.b64encode(hashed_input_password):
                 return {"id": user_id, "name": name, "email": user.email}
+                
             else:
                 return {"message": "Contraseña incorrecta"}
         else:

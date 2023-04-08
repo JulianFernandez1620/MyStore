@@ -73,7 +73,7 @@ const Header = ({ isLoggedIn, handleLogout, setShowIngreso }) => {
                             )}
                         </div>
                     ) : (
-                        <Link onClick={() => setShowIngreso(true)} className='text-white hover:text-gray-200' >
+                        <Link to="/ingreso" className='text-white hover:text-gray-200'>
                             Ingresar
                         </Link>
                     )}

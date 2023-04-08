@@ -1,50 +1,46 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import logo from './images/logo.png';
 
 const CambiarClave = () => {
     return (
-        <div className="bg-purple-700 flex flex-col h-screen">
-            <div className="flex justify-between items-center py-5 px-10">
-                <div className="text-white font-bold text-lg">Logo</div>
-                <div className="flex items-center space-x-4">
-                    <button className="text-white font-medium hover:text-gray-300">
-                        Iniciar sesión
-                    </button>
-                    <button className="bg-white text-purple-700 font-medium px-5 py-2 rounded-lg hover:bg-gray-100">
-                        Registrarse
-                    </button>
-                </div>
-            </div>
-            <div className="flex-grow flex items-center justify-center">
-                <form className="bg-white rounded-lg p-10">
-                    <div className="text-2xl font-bold text-gray-700 mb-5">Cambiar contraseña</div>
-                    <div className="mb-5">
-                        <label htmlFor="old-password" className="block text-gray-700 font-medium mb-2">
-                            Contraseña anterior
-                        </label>
+        <div className="flex flex-col items-center justify-center h-screen bg-purple-700">
+            <div className="bg-white border rounded-lg shadow-lg p-8 max-w-xs w-full">
+                <img className="w-28 mb-6" src={logo} alt="Logo" />
+                <h2 className="text-2xl font-bold mb-6">Cambiar contraseña</h2>
+                <form className="space-y-4">
+                    <label className="block">
+                        <span className="text-gray-700">Contraseña anterior</span>
                         <input
                             type="password"
-                            id="old-password"
-                            className="border border-gray-400 py-2 px-3 rounded-lg w-full focus:outline-none focus:ring focus:border-purple-500"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
                             required
                         />
-                    </div>
-                    <div className="mb-5">
-                        <label htmlFor="new-password" className="block text-gray-700 font-medium mb-2">
-                            Nueva contraseña
-                        </label>
+                    </label>
+                    <label className="block">
+                        <span className="text-gray-700">Nueva contraseña</span>
                         <input
                             type="password"
-                            id="new-password"
-                            className="border border-gray-400 py-2 px-3 rounded-lg w-full focus:outline-none focus:ring focus:border-purple-500"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring-purple-500"
                             required
                         />
-                    </div>
-                    <button className="bg-purple-700 text-white font-medium py-2 px-5 rounded-lg hover:bg-purple-800">
+                    </label>
+                    <button
+                        type="submit"
+                        className="bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800"
+                    >
                         Cambiar contraseña
                     </button>
                 </form>
             </div>
-            <div className="bg-white h-96"></div>
+            <div className="mt-4">
+                <Link
+                    to="/ingreso"
+                    className="text-white hover:text-gray-300 font-medium"
+                >
+                    Volver al inicio de sesión
+                </Link>
+            </div>
         </div>
     );
 };

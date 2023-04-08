@@ -1,14 +1,22 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, File, UploadFile, Request, status
+from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
-from tkinter import filedialog
+import secrets
 from tkinter import *
 import base64
-from PIL import Image as io
+import datetime
+from PIL import Image
+import io
 import hashlib
-import logging
-
+from fastapi.responses import JSONResponse
+import os
+import jwt
+import psycopg2
+from psycopg2.extras import RealDictCursor
+import traceback
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.model.carrito_compra import Carrito
 from app.model.compra import Compra
 from app.model.comprador import Comprador
@@ -22,13 +30,25 @@ from app.model.tienda import Tienda
 from app.model.usuario import User, UserLogin
 from app.model.vendedor import Vendedor
 from app.model.venta import Venta
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField
+from fastapi.exceptions import RequestValidationError
 
+
+ALGORITHM = "HS256"
+SECRET_KEY = secrets.token_hex(32)
 origins= [
     "http://localhost:3000",
-    "http://127.0.0.1:3000"
+    "http://localhost",
+    "http://localhost:8000",
 ]
 app = FastAPI()
+
 def init_app():
+
+    class MyForm(FlaskForm):
+        name = StringField('Name')
+        submit = SubmitField('Submit')
 
     app = FastAPI(
         title= "MyStore",
@@ -57,15 +77,14 @@ def init_app():
         conn = await asyncpg.connect(user='postgres', password='8VEU5ABZS9wm9.MC', database='test', host='localhost')
         return conn
 
-    @app.on_event("startup")
-    async def startup():
-        app.db_connection = await connect_db()
-
-    @app.on_event("shutdown")
-    async def shutdown():
-        await app.db_connection.close()
-
     # Bloque de funciones de primer necesidad #
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+        return JSONResponse(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            content={"error": str(exc)}
+        )
 
     @app.post("/register")
     async def register(user: User):
@@ -90,24 +109,42 @@ def init_app():
 
         return {"id": row[0], "name": row[1], "email": row[2], "cellphone": row[3], "tipo": row[4]}
 
-    @app.post("/login")
-    async def login(user: UserLogin):
-        query = "SELECT id, name, password FROM usuario WHERE email = $1"
-        row = await app.db_connection.fetchrow(query, user.email)
-        print (row)
+
+
+    @app.post("/login-utf8")
+    async def login(user_credentials: UserLogin, response: Response):
+        query = "SELECT id, name, email, password FROM usuario WHERE email = $1"
+        row = await app.db_connection.fetchrow(query, user_credentials.email)
         if row:
-            user_id, name, hashed_password_b64 = row
-            password_bytes = user.password.encode('utf-8')
+            user_id, name, email, hashed_password_b64 = row
+            password_bytes = user_credentials.password.encode('utf-8')
             salt = base64.b64decode(hashed_password_b64)[:64]
             hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
             hashed_input_password = salt + hashed_bytes
             if hashed_password_b64.encode('utf-8') == base64.b64encode(hashed_input_password):
-                return {"id": user_id, "name": name, "email": user.email}
+                # Generate JWT with user data
+                user_data = {"id": user_id, "name": name, "email": email}
+                jwt_token = jwt.encode(
+                    {"user": user_data, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
+                    SECRET_KEY,
+                    algorithm="HS256"
+                )
+
+                # Update user last login and save name and email
+                update_query = "UPDATE usuario SET last_login = $1, name = $2, email = $3 WHERE id = $4"
+                await app.db_connection.execute(update_query, datetime.datetime.utcnow(), name, email, user_id)
+
+                response.headers["Access-Control-Allow-Origin"] = "*"
+                return {"jwt_token": jwt_token}
                 
             else:
+                response.headers["Access-Control-Allow-Origin"] = "*"
                 return {"message": "Contraseña incorrecta"}
         else:
+            response.headers["Access-Control-Allow-Origin"] = "*"
             return {"message": "Usuario no encontrado"}
+
+
 
 
 
@@ -467,37 +504,19 @@ def init_app():
 
     # Bloque de funciones CRUD para producto #
 
-    @app.post("/producto")
+    @app.post("/producto/")
     async def crear_producto(producto: Producto):
-        with open(producto.ilustracion, "rb") as imagen_file:
-            # Lee los datos binarios de la imagen
-            datos_binarios = imagen_file.read()
-        # Convierte los datos binarios en una cadena base64
-        cadena_base64 = base64.b64encode(datos_binarios).decode('utf-8')
-        query = "INSERT INTO producto (nombre, descripcion, precio, ilustracion) VALUES ($1::text, $2::text, $3::numeric, $4::text) RETURNING id, nombre, descripcion, precio, ilustracion"
-        values = (producto.nombre, producto.descripcion, producto.precio, cadena_base64)
-        row = await app.db_connection.fetchrow(query, *values)
-        return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": row[4]}
+        # Leer los bytes de la imagen
+        imagen_bytes = await producto.ilustracion[0].read()
+        # Convertir los bytes a una cadena de texto en formato Base64
+        imagen_base64 = base64.b64encode(imagen_bytes).decode('utf-8')
+        # Preparar los valores para la consulta
+        query = "INSERT INTO public.producto(nombre, descripcion, precio, ilustracion) VALUES($1, $2, $3, $4)"
+        values = (producto.nombre, producto.descripcion, producto.precio, imagen_base64)
+        # Ejecutar la consulta
+        await app.db_connection.execute(query, *values)
+        return {"mensaje": "Producto creado exitosamente"}
 
-    @app.post("/producto")
-    async def crear_producto(producto: Producto):
-        query = "INSERT INTO producto (nombre, descripcion, precio) VALUES ($1::text, $2::text, $3::numeric) RETURNING id, nombre, descripcion, precio"
-        values = (producto.nombre, producto.descripcion, producto.precio)
-        row = await app.db_connection.fetchrow(query, *values)
-        return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3]}
-
-    @app.get("/producto/{producto_id}")
-    async def leer_producto(producto_id: int):
-        query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto WHERE id = $1"
-        row = await app.db_connection.fetchrow(query, producto_id)
-        if row:
-            # Convierte la cadena base64 de la imagen en datos binarios
-            datos_binarios = base64.b64decode(row[4])
-            # Crea un objeto de imagen a partir de los datos binarios
-            imagen = Image.open(io.BytesIO(datos_binarios))
-            return {"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen}
-        else:
-            return {"message": "Producto no encontrado"}
 
     @app.get("/productos")
     async def leer_productos():
@@ -505,11 +524,15 @@ def init_app():
         rows = await app.db_connection.fetch(query)
         productos = []
         for row in rows:
-            # Convierte la cadena base64 de la imagen en datos binarios
-            datos_binarios = base64.b64decode(row[4])
-            # Crea un objeto de imagen a partir de los datos binarios
-            imagen = Image.open(io.BytesIO(datos_binarios))
-            productos.append({"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen})
+            if row[4]:  # si ilustracion no es nula
+                datos_binarios = base64.b64decode(row[4])
+                imagen_base64 = base64.b64encode(datos_binarios).decode("utf-8")
+            else:  # si ilustracion es nula
+                path = os.path.join(os.path.dirname(__file__), "images/nodisponible.png")
+                with open(path, "rb") as f:
+                    datos_binarios = f.read()
+                    imagen_base64 = base64.b64encode(datos_binarios).decode("utf-8")
+            productos.append({"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen_base64})
         return productos
 
     @app.get("/producto/{producto_id}")

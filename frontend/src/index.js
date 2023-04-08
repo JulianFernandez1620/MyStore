@@ -9,8 +9,10 @@ axios.defaults.baseURL = 'http://localhost:8000';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-    <Footer/>
+    <div id="root">
+      <App />
+      <Footer/>
+    </div>
   </React.StrictMode>,
   document.getElementById('root')
 );

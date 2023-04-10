@@ -20,71 +20,69 @@ const CrearProducto = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        const formData = new FormData();
-        formData.append("nombre", producto.nombre);
-        formData.append("descripcion", producto.descripcion);
-        formData.append("precio", producto.precio);
-
-        const ilustracionBlob = new Blob([producto.ilustracion.slice(0, producto.ilustracion.size)], { type: producto.ilustracion.type });
+    const ilustracionBlob = new Blob([producto.ilustracion.slice(0, producto.ilustracion.size)], { type: producto.ilustracion.type });
         const fileReader = new FileReader();
         fileReader.readAsArrayBuffer(ilustracionBlob);
+        let data;
 
         fileReader.onload = async (event) => {
             const buffer = event.target.result;
             const bytes = new Uint8Array(buffer);
-            formData.append("ilustracion", bytes);
-
-            for (const [clave, valor] of formData.entries()) {
-                console.log(`${clave}: ${valor}`);
-            }
+            const data = {
+                nombre: producto.nombre,
+                descripcion: producto.descripcion,
+                precio: producto.precio,
+                ilustracion: Array.from(bytes),
+                ilustracion_type: producto.ilustracion.type
+            };
+        };
 
             try {
-                await axios.post("http://localhost:8000/producto/", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                });
+                await axios.post("http://localhost:8000/producto/", data);
                 alert("Producto creado exitosamente");
             } catch (error) {
                 console.error(error);
             }
         };
-    };
 
     return (
-        <div>
-            <h1>Crear Producto</h1>
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Nombre:
-                    <input
-                        type="text"
-                        name="nombre"
-                        value={producto.nombre}
-                        onChange={handleChange}
-                    />
-                </label>
-                <label>
-                    Descripción:
-                    <textarea
-                        name="descripcion"
-                        value={producto.descripcion}
-                        onChange={handleChange}
-                    ></textarea>
-                </label>
-                <label>
-                    Precio:
-                    <input
-                        type="number"
-                        name="precio"
-                        value={producto.precio}
-                        onChange={handleChange}
-                    />
-                </label>
-                <label>
-                    Ilustración:
-                    <input type="file" name="ilustracion" onChange={handleChange} />
-                </label>
-                <button type="submit">Crear Producto</button>
-            </form>
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-100" >
+            <div className="bg-white border rounded-lg shadow-lg p-25 max-w-xs w-full">
+                <h1 className="text-2xl font-bold mb-6 justify-center">Crear Producto</h1>
+                <form onSubmit={handleSubmit} className="bg-purple-300 space-y-6">
+                    <label>
+                        Nombre:
+                        <input
+                            type="text"
+                            name="nombre"
+                            value={producto.nombre}
+                            onChange={handleChange}
+                        />
+                    </label>
+                    <label>
+                        Descripción:
+                        <textarea
+                            name="descripcion"
+                            value={producto.descripcion}
+                            onChange={handleChange}
+                        ></textarea>
+                    </label>
+                    <label>
+                        Precio:
+                        <input
+                            type="number"
+                            name="precio"
+                            value={producto.precio}
+                            onChange={handleChange}
+                        />
+                    </label>
+                    <label>
+                        Ilustración:
+                        <input type="file" name="ilustracion" onChange={handleChange} />
+                    </label>
+                    <button type="submit">Crear Producto</button>
+                </form>
+            </div>
         </div>
     );
 };

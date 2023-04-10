@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Response, File, UploadFile, Request, status
+from fastapi import FastAPI, Response, File, UploadFile, Request, status, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
@@ -505,17 +505,15 @@ def init_app():
     # Bloque de funciones CRUD para producto #
 
     @app.post("/producto/")
-    async def crear_producto(producto: Producto):
-        # Leer los bytes de la imagen
-        imagen_bytes = await producto.ilustracion[0].read()
-        # Convertir los bytes a una cadena de texto en formato Base64
-        imagen_base64 = base64.b64encode(imagen_bytes).decode('utf-8')
-        # Preparar los valores para la consulta
-        query = "INSERT INTO public.producto(nombre, descripcion, precio, ilustracion) VALUES($1, $2, $3, $4)"
-        values = (producto.nombre, producto.descripcion, producto.precio, imagen_base64)
-        # Ejecutar la consulta
-        await app.db_connection.execute(query, *values)
-        return {"mensaje": "Producto creado exitosamente"}
+    async def crear_producto(nombre: str, descripcion: str, precio: float, ilustracion: bytes = File(...)):
+        query = "INSERT INTO productos (nombre, descripcion, precio, ilustracion) VALUES (?, ?, ?, ?)"
+        values = (nombre, descripcion, precio, ilustracion)
+        try:
+            await app.db_connection.execute(query, *values)
+            return {"mensaje": "Producto creado exitosamente"}
+        except Exception as e:
+            print(e.response)
+            raise HTTPException(status_code=500, detail="Error interno del servidor")
 
 
     @app.get("/productos")

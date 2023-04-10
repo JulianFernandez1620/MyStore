@@ -17,25 +17,28 @@ const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
     useEffect(() => {
         fetch('http://localhost:8000/productos')
             .then((response) => response.json())
-            .then((data) => setProductos(data));
+            .then((data) => {
+                console.log(data);
+                setProductos(data)});
     }, []);
 
     const settings = {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 1,
+        slidesToShow: 20,
+        slidesToScroll: 20,
     };
 
     return (
-        <div className="flex flex-col h-screen">
-            <main className="flex-grow bg-white " style={{ position: "relative" }}>
-                {/* {showIngreso ? (
+        <div className="flex flex-row h-screen">
+            <aside className="bg-purple-300" style={{ flexBasis: '25%', flexGrow: 0, maxWidth: '25%' }}></aside>
+            <main className="bg-white p-4" style={{ flexBasis: '75%', flexGrow: 1, maxWidth: '75%' }}>
+                {showIngreso ? (
                     <Ingreso setIsLoggedIn={setIsLoggedIn} setShowIngreso={setShowIngreso} />
                 ) : null}
-                <div style={{ width: '60%', height: '60%' }}>
-                    <Slider {...settings} style={{ height: '60%' }}>
+                <div style={{ maxWidth: '100%', height: '100%' }}>
+                    <Slider {...settings} style={{ height: '100%', float: 'right' }}>
                         {productos.map((producto) => (
                             <div key={producto.id}>
                                 <h2>{producto.nombre}</h2>
@@ -51,9 +54,8 @@ const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
                             </div>
                         ))}
                     </Slider>
-                </div> */}
+                </div>
             </main>
-            <aside className="h-full w-1/4 bg-purple-300"></aside>
         </div>
     );
 };

@@ -4,6 +4,7 @@ import Ingreso from './../vistas/Ingreso';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import axios from 'axios';
 
 const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
     const [showIngreso, setShowIngreso] = useState(false);
@@ -14,12 +15,17 @@ const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
 
     const [productos, setProductos] = useState([]);
 
+    const leer_productos = async () => {
+        try {
+            const response = await axios.get('http://localhost:8888/productos');
+            setProductos(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
-        fetch('http://localhost:8000/productos')
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                setProductos(data)});
+        leer_productos();
     }, []);
 
     const settings = {

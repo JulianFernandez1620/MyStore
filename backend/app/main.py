@@ -1,10 +1,12 @@
 import uvicorn
-from fastapi import FastAPI, Response, File, UploadFile, Request, status, HTTPException
+from fastapi import FastAPI, Response, File, UploadFile, Request, status, HTTPException, Form
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
 import secrets
 from tkinter import *
+import uuid
+import aiofiles
 import base64
 import datetime
 from PIL import Image
@@ -16,6 +18,7 @@ import jwt
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import traceback
+from decimal import Decimal
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.model.carrito_compra import Carrito
 from app.model.compra import Compra
@@ -37,11 +40,7 @@ from fastapi.exceptions import RequestValidationError
 
 ALGORITHM = "HS256"
 SECRET_KEY = secrets.token_hex(32)
-origins= [
-    "http://localhost:3000",
-    "http://localhost",
-    "http://localhost:8000",
-]
+origins= ["*"]
 app = FastAPI()
 
 def init_app():
@@ -505,33 +504,42 @@ def init_app():
     # Bloque de funciones CRUD para producto #
 
     @app.post("/producto/")
-    async def crear_producto(nombre: str, descripcion: str, precio: float, ilustracion: bytes = File(...)):
-        query = "INSERT INTO productos (nombre, descripcion, precio, ilustracion) VALUES (?, ?, ?, ?)"
-        values = (nombre, descripcion, precio, ilustracion)
+    async def crear_producto(nombre: str = Form(...), descripcion: str = Form(...), precio: float = Form(...), ilustracion: UploadFile = File(...)):
         try:
-            await app.db_connection.execute(query, *values)
-            return {"mensaje": "Producto creado exitosamente"}
+            # Guardar la imagen del producto en el directorio de uploads
+            extension = os.path.splitext(ilustracion.filename)[1]
+            nombre_archivo = str(uuid.uuid4()) + extension
+            ruta_archivo = os.path.join("uploads", nombre_archivo)
+            async with aiofiles.open(ruta_archivo, "wb") as archivo:
+                contenido = await ilustracion.read()
+                await archivo.write(contenido)
+
+            # Guardar los datos del producto en la base de datos
+            async with app.db_connection.transaction():
+                query = "INSERT INTO producto (nombre, descripcion, precio, ilustracion) VALUES ($1::text, $2::text, $3::money, $4::bytea[])"
+                await app.db_connection.execute(query, nombre, descripcion, str(precio), [contenido])
+            return {"mensaje": "Producto creado exitosamente."}
         except Exception as e:
-            print(e.response)
-            raise HTTPException(status_code=500, detail="Error interno del servidor")
+            print(e) # Imprimir el error en la consola
+            return {"mensaje": "Error al crear el producto."}
 
 
-    @app.get("/productos")
+    @app.get("/productos/")
     async def leer_productos():
         query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto"
-        rows = await app.db_connection.fetch(query)
+        resultados = await app.db_connection.fetch(query)
         productos = []
-        for row in rows:
-            if row[4]:  # si ilustracion no es nula
-                datos_binarios = base64.b64decode(row[4])
-                imagen_base64 = base64.b64encode(datos_binarios).decode("utf-8")
-            else:  # si ilustracion es nula
-                path = os.path.join(os.path.dirname(__file__), "images/nodisponible.png")
-                with open(path, "rb") as f:
-                    datos_binarios = f.read()
-                    imagen_base64 = base64.b64encode(datos_binarios).decode("utf-8")
-            productos.append({"id": row[0], "nombre": row[1], "descripcion": row[2], "precio": row[3], "ilustracion": imagen_base64})
-        return productos
+        for row in resultados:
+            producto = {
+                "id": row[0],
+                "nombre": row[1],
+                "descripcion": row[2],
+                "precio": row[3],
+                "ilustracion": base64.b64encode(row[4]).decode('utf-8')
+            }
+            productos.append(producto)
+        return {"productos": productos}
+
 
     @app.get("/producto/{producto_id}")
     async def leer_producto(producto_id: int):

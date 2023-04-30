@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import './../Estilos/Registro.css';
+import { Navigate } from "react-router-dom";
 
 const Registro = () => {
     const [formData, setFormData] = useState({
@@ -10,6 +11,8 @@ const Registro = () => {
         tipo: "",
         cellphone: "",
     });
+
+    const estado = "Comprador";
 
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -22,13 +25,16 @@ const Registro = () => {
         });
     };
 
+    let response = null;
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const errors = validate(formData);
         if (Object.keys(errors).length === 0) {
             try {
-                await axios.post('/register', formData);
+                response = await axios.post('http://127.0.0.1:8888/register', formData);
                 alert('Registro exitoso');
+                console.log(response.data.id);
             } catch (error) {
                 console.error(error);
                 alert('Ocurrió un error al registrar el usuario');

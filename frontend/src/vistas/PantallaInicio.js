@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Ingreso from './../vistas/Ingreso';
 import axios from 'axios';
 import './../Estilos/Galeria.css';
+import { Link } from 'react-router-dom';
 
 const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
     const [showIngreso, setShowIngreso] = useState(false);
@@ -26,7 +27,16 @@ const PantallaInicio = ({ isLoggedIn, setIsLoggedIn }) => {
 
     return (
         <div className="flex flex-row h-screen">
-            <aside className="bg-purple-300" style={{ flexBasis: '25%', flexGrow: 0, maxWidth: '25%' }}></aside>
+            <aside className="bg-purple-300" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', flexBasis: '25%', flexGrow: 0, maxWidth: '25%', backgroundColor: 'rgb(108, 53, 121)', color: 'white' }}>
+                <h1 style={{ fontSize: '3rem', fontWeight: 'bold' }}>LLegó el momento de digitalizarte</h1>
+                <a style={{ fontSize: '1.5rem' }}>Crea tu tienda online rápido e invierte en tu negocio.</a>
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+                    <Link to="/" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Crear Tienda
+                    </Link>
+                </div>
+            </aside>
+
             <main className="bg-white p-4" style={{ flexBasis: '75%', flexGrow: 1, maxWidth: '75%' }}>
                 {showIngreso ? (
                     <Ingreso setIsLoggedIn={setIsLoggedIn} setShowIngreso={setShowIngreso} />

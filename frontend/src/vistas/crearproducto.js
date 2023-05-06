@@ -38,7 +38,7 @@ const CrearProducto = () => {
         };
 
             try {
-                await axios.post("http://localhost:8000/producto/", data);
+                await axios.post("http://localhost:8888/producto/", data);
                 alert("Producto creado exitosamente");
             } catch (error) {
                 console.error(error);

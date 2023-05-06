@@ -12,7 +12,7 @@ import io
 import hashlib
 from fastapi.responses import JSONResponse
 import os
-import jwt
+import jwt  
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import traceback
@@ -37,12 +37,25 @@ from fastapi.exceptions import RequestValidationError
 
 ALGORITHM = "HS256"
 SECRET_KEY = secrets.token_hex(32)
+
+app = FastAPI()
+
 origins= [
     "http://localhost:3000",
     "http://localhost",
-    "http://localhost:8000",
+    "http://localhost:8888",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1",
+    "http://127.0.0.1:8888"
 ]
-app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def init_app():
 
@@ -74,7 +87,7 @@ def init_app():
         await app.db_connection.close()
 
     async def connect_db():
-        conn = await asyncpg.connect(user='postgres', password='8VEU5ABZS9wm9.MC', database='test', host='localhost')
+        conn = await asyncpg.connect(user='postgres', password='12345', database='My_Store', host='localhost')
         return conn
 
     # Bloque de funciones de primer necesidad #
@@ -95,8 +108,8 @@ def init_app():
             return {"message": "El correo electrónico ya está registrado"}
 
         # Almacenar el nuevo usuario en la base de datos
-        password_bytes = user.password.encode('utf-8')
-        salt = hashlib.sha256(password_bytes).hexdigest().encode('utf-8')
+        password_bytes = user.password.jwt.encode('utf-8')
+        salt = hashlib.sha256(password_bytes).hexdigest().jwt.encode('utf-8')
         hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
         hashed_password = salt + hashed_bytes
 
@@ -126,8 +139,7 @@ def init_app():
                 user_data = {"id": user_id, "name": name, "email": email}
                 jwt_token = jwt.encode(
                     {"user": user_data, "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=30)},
-                    SECRET_KEY,
-                    algorithm="HS256"
+                    SECRET_KEY, algorithm='HS256'
                 )
 
                 # Update user last login and save name and email

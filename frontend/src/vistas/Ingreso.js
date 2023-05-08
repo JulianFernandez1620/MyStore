@@ -11,14 +11,14 @@ const Ingreso = ({ setIsLoggedIn, setShowIngreso, setUserData }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await ('http://localhost:8888/login-utf8', {
-                method: 'POST',
+            const response = await fetch('http://127.0.0.1:8888/login-utf8' , {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ email, password }),
             });
-            const data = await response;
+            const data = await response.json();
             if (response.ok) {
                 if(data.message === 'Contraseña incorrecta' | data.message === 'Usuario no encontrado'){
                     setError(data.message);

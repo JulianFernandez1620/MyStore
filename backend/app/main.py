@@ -524,21 +524,27 @@ def init_app():
             return {"mensaje": "Error al crear el producto."}
 
 
-    @app.get("/productos/")
-    async def leer_productos():
-        query = "SELECT id, nombre, descripcion, precio, ilustracion FROM producto"
-        resultados = await app.db_connection.fetch(query)
-        productos = []
-        for row in resultados:
-            producto = {
-                "id": row[0],
-                "nombre": row[1],
-                "descripcion": row[2],
-                "precio": row[3],
-                "ilustracion": base64.b64encode(row[4]).decode('utf-8')
-            }
-            productos.append(producto)
-        return {"productos": productos}
+    @app.get("/productos")
+    async def obtener_productos():
+        try:
+            async with app.db_connection.transaction():
+                query = "SELECT id, nombre, descripcion, precio, (SELECT ilustracion[1] FROM producto WHERE id = p.id) AS ilustracion FROM producto p "
+                resultados = await app.db_connection.fetch(query)
+                productos = []
+                for resultado in resultados:
+                    imagen = base64.b64encode(resultado['ilustracion']).decode('utf-8')
+                    producto = {
+                        "id": resultado["id"],
+                        "nombre": resultado["nombre"],
+                        "descripcion": resultado["descripcion"],
+                        "precio": resultado["precio"],
+                        "ilustracion": imagen
+                    }
+                    productos.append(producto)
+                return {"productos": productos}
+        except Exception as e:
+            print(e) # Imprimir el error en la consola
+            return {"mensaje": "Error al obtener los productos."}
 
 
     @app.get("/producto/{producto_id}")

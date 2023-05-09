@@ -11,7 +11,7 @@ const Ingreso = ({ setIsLoggedIn, setShowIngreso, setUserData }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await ('http://localhost:8888/login-utf8', {
+            const response = await fetch('http://localhost:8888/login-utf8', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -82,7 +82,7 @@ const Ingreso = ({ setIsLoggedIn, setShowIngreso, setUserData }) => {
             <div className="mt-4">
                 ¿No tienes una cuenta?{' '}
                 <Link
-                    to="/registro"
+                    to="/selector"
                     className="text-blue-500 hover:text-blue-600 font-medium"
                 >
                     Regístrate

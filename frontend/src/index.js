@@ -4,14 +4,14 @@ import App from './App';
 import Footer from './partes/Footer';
 import axios from 'axios';
 import './index.css';
-
+import 'tailwindcss/tailwind.css';
 axios.defaults.baseURL = 'http://localhost:8000';
 
 ReactDOM.render(
   <React.StrictMode>
-    <div id="root">
+    <div className="app-container" style={{ display: 'grid', gridTemplateRows: 'auto 1fr auto', minHeight: '100vh' }}>
       <App />
-      <Footer/>
+      <Footer />
     </div>
   </React.StrictMode>,
   document.getElementById('root')

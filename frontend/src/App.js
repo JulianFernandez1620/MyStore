@@ -6,6 +6,8 @@ import Registro from './vistas/Registro';
 import CambiarClave from './vistas/CambiarClave';
 import CrearProducto from './vistas/crearproducto';
 import Header from './partes/Header';
+import RegistroComprador from './vistas/RegistroComprador';
+import RegistroVendedor from './vistas/RegistroVendedor';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -38,7 +40,9 @@ function App() {
                         />
                     }
                 />
-                <Route path="/registro" element={<Registro isLoggedIn={isLoggedIn} />} />
+                <Route path="/selector" element={<Registro />} />
+                <Route path="/RegistroVendedor" element={<RegistroVendedor />} />
+                <Route path="/RegistroComprador" element={<RegistroComprador />} />
                 <Route path="/cambiarClave" element={<CambiarClave isLoggedIn={isLoggedIn} />} />
                 <Route
                     path="/*"

@@ -6,6 +6,7 @@ import Registro from './vistas/Registro';
 import CambiarClave from './vistas/CambiarClave';
 import CrearProducto from './vistas/crearproducto';
 import Header from './partes/Header';
+import Tendencia from './vistas/tendencia';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,6 +46,7 @@ function App() {
                     element={<PantallaInicio isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
                 />
                 <Route path="/crearproducto" element={<CrearProducto />} />
+                <Route path="/tendencias" element={<Tendencia />} />
 
             </Routes>
         </Router>

@@ -14,7 +14,7 @@
     border-radius: 4px;
     transition: all 0.2s ease-in-out;
 }
-
+/*Cambiar de color del borde al hacer hover*/
 .imagen:hover {
     border-color: #E2E8F0;
 }

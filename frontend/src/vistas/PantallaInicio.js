@@ -9,8 +9,7 @@ const PantallaInicio = () => {
     const [productos, setProductos] = useState([]);
 
     const handleAbrirVentanaEmergente = () => {
-        const ventanaEmergente = document.createElement('div');
-        ventanaEmergente.innerHTML = 'Contenido de la ventana emergente';
+        const ventanaEmergente = <VentanaEmergente />;
 
         // Estilos de la ventana emergente
         ventanaEmergente.style.position = 'fixed';
@@ -45,6 +44,7 @@ const PantallaInicio = () => {
 
     return (
         <div className="pantalla-inicio-container" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <script src="./../partes/VentanaEmergente.js"></script>
             <div className="flex flex-row h-screen">
             <aside className="bg-purple-300" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', flexBasis: '30%', flexGrow: 0, maxWidth: '30%', backgroundColor: 'rgb(108, 53, 121)', color: 'white' }}>
                     <h1 style={{ fontSize: '3rem', fontWeight: 'bold' }}>LLegó el momento de digitalizarte</h1><br></br><br></br>

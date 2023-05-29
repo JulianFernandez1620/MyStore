@@ -23,7 +23,7 @@ async def connect_db():
 
 # Bloque de funciones CRUD para carrito de compras #
 
-@router.post("/carrito")
+@router.post("/")
 async def crear_carrito(carrito: Carrito):
     productos = carrito.productos.split(", ")
     query = "INSERT INTO carrito_compra (productos, id_comprador) VALUES ($1::text[], $2::integer) RETURNING id, productos, id_comprador "
@@ -31,7 +31,7 @@ async def crear_carrito(carrito: Carrito):
     row = await router.db_connection.fetchrow(query, *values)
     return {"id": row[0], "productos": row[1], "id_comprador": row[2]}
 
-@router.get("/carrito/{carrito_id}")
+@router.get("/{carrito_id}")
 async def leer_carrito(carrito_id: int):
     query = "SELECT id, productos, id_comprador FROM carrito_compra WHERE id = $1"
     row = await router.db_connection.fetchrow(query, carrito_id)
@@ -40,7 +40,7 @@ async def leer_carrito(carrito_id: int):
     else:
         return {"message": "Carrito no encontrado"}
 
-@router.put("/carrito/{carrito_id}")
+@router.put("/{carrito_id}")
 async def actualizar_carrito(carrito_id: int, carrito: Carrito):
     productos = carrito.productos.split(", ")
     query = "UPDATE carrito_compra SET productos = $1, id_comprador = $2 WHERE id = $3 RETURNING id, productos, id_comprador"
@@ -51,7 +51,7 @@ async def actualizar_carrito(carrito_id: int, carrito: Carrito):
     else:
         return {"message": "Carrito no encontrado"}
 
-@router.delete("/carrito/{carrito_id}")
+@router.delete("/{carrito_id}")
 async def borrar_carrito(carrito_id: int):
     query = "DELETE FROM carrito_compra WHERE id = $1 RETURNING id, productos, id_comprador"
     row = await router.db_connection.fetchrow(query, carrito_id)

@@ -27,7 +27,7 @@ async def connect_db():
 
 # Bloque de funciones CRUD para producto #
 
-@router.post("/producto/")
+@router.post("/")
 async def crear_producto(nombre: str = Form(...), descripcion: str = Form(...), precio: float = Form(...), ilustracion: UploadFile = File(...)):
     try:
         # Guardar la imagen del producto en el directorio de uploads
@@ -48,7 +48,7 @@ async def crear_producto(nombre: str = Form(...), descripcion: str = Form(...), 
         return {"mensaje": "Error al crear el producto."}
 
 
-@router.get("/productos")
+@router.get("s")
 async def obtener_productos():
     try:
         async with router.db_connection.transaction():
@@ -71,7 +71,7 @@ async def obtener_productos():
         return {"mensaje": "Error al obtener los productos."}
 
 
-@router.get("/producto/{producto_id}")
+@router.get("/{producto_id}")
 async def leer_producto(producto_id: int):
     query = "SELECT id, nombre, descripcion, precio FROM producto WHERE id = $1"
     row = await router.db_connection.fetchrow(query, producto_id)
@@ -80,7 +80,7 @@ async def leer_producto(producto_id: int):
     else:
         return {"message": "Producto no encontrado"}
 
-@router.put("/producto/{producto_id}")
+@router.put("/{producto_id}")
 async def actualizar_producto(producto_id: int, producto: Producto):
     query = "UPDATE producto SET nombre = $1, descripcion = $2, secciones =$3, diseño = $4, tipo = $5, url = $6 WHERE id = $3 RETURNING id, nombre, descripcion, precio, ilustracion"
     values = (producto.nombre, producto.descripcion, producto.precio, producto.ilustracion, producto_id)
@@ -90,7 +90,7 @@ async def actualizar_producto(producto_id: int, producto: Producto):
     else:
         return {"message": "Producto no encontrado"}
 
-@router.delete("/producto/{producto_id}")
+@router.delete("/{producto_id}")
 async def borrar_producto(producto_id: int):
     query = "DELETE FROM producto WHERE id = $1 RETURNING id, nombre, descripcion, precio, ilustracion"
     row = await router.db_connection.fetchrow(query, producto_id)

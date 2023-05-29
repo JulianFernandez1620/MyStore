@@ -23,7 +23,7 @@ async def connect_db():
 
 # Bloque de funciones CRUD para tienda #
 
-@router.post("/tienda")
+@router.post("/")
 async def crear_tienda(tienda: Tienda):
     productos = tienda.productos.split(", ")
     query = "INSERT INTO tienda (nombre, direccion, id_vendedor, productos) VALUES ($1::text, $2::text, $3::integer, $4::text[]) RETURNING id, nombre, direccion, id_vendedor, productos"
@@ -31,7 +31,7 @@ async def crear_tienda(tienda: Tienda):
     row = await router.db_connection.fetchrow(query, *values)
     return {"id": row[0], "nombre": row[1], "direccion": row[2], "id_vendedor": row[3], "productos": row[4]}
 
-@router.get("/tienda/{tienda_id}")
+@router.get("/{tienda_id}")
 async def leer_tienda(tienda_id: int):
     query = "SELECT id, nombre, direccion, id_vendedor, productos FROM tienda WHERE id = $1"
     row = await router.db_connection.fetchrow(query, tienda_id)
@@ -40,7 +40,7 @@ async def leer_tienda(tienda_id: int):
     else:
         return {"message": "Tienda no encontrada"}
 
-@router.put("/tienda/{tienda_id}")
+@router.put("/{tienda_id}")
 async def actualizar_tienda(tienda_id: int, tienda: Tienda):
     productos = tienda.productos.split(", ")
     query = "UPDATE tienda SET nombre = $1, direccion = $2, id_vendedor =$3, productos = $4 WHERE id = $5 RETURNING id, fecha_inicio, fecha_fin, precio, tipo, id_usuario"
@@ -51,7 +51,7 @@ async def actualizar_tienda(tienda_id: int, tienda: Tienda):
     else:
         return {"message": "Suscripción no encontrada"}
 
-@router.delete("/tienda/{tienda_id}")
+@router.delete("/{tienda_id}")
 async def borrar_tienda(tienda_id: int):
     query = "DELETE FROM tienda WHERE id = $1 RETURNING id, fecha_inicio, fecha_fin, precio, tipo, id_usuario"
     row = await router.db_connection.fetchrow(query, tienda_id)

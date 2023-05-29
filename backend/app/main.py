@@ -85,7 +85,6 @@ def init_app():
         if row:
             return {"message": "El correo electrónico ya está registrado"}
 
-        # Almacenar el nuevo usuario en la base de datos
         password_bytes = user.password.encode('utf-8')
         salt = hashlib.sha256(password_bytes).hexdigest().encode('utf-8')
         hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
@@ -93,7 +92,8 @@ def init_app():
 
         # Convertir el hash a base64
         hashed_password_b64 = base64.b64encode(hashed_password).decode('utf-8')
-
+        
+        # Almacenar el nuevo usuario en la base de datos
         query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, tipo"
         values = (user.name, user.email, user.cellphone, hashed_password_b64, user.tipo)
         row = await app.db_connection.fetchrow(query, *values)

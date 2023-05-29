@@ -1,10 +1,25 @@
 from fastapi import APIRouter
 from app.model.compra import Compra
+import asyncpg
 
 router = APIRouter(
     prefix= "/compra",
     tags=["Compras"]
 )
+
+@router.on_event("startup")
+async def startup():
+    router.db_connection = await connect_db()
+
+    #Funcion que se ejecuta al cerrar la aplicacion, cierra la conexion con la base de datos    
+@router.on_event("shutdown")
+async def shutdown():
+    await router.db_connection.close()
+
+    #Conexion a la base de datos
+async def connect_db():
+    conn = await asyncpg.connect(user='postgres', password='12345', database='My_Store', host='localhost')
+    return conn
 
 # Bloque de funciones CRUD para compra #
 

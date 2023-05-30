@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
+/*import './Header.css'*/
 const Header = ({ isLoggedIn, handleLogout, setShowIngreso }) => {
     const [showMenu, setShowMenu] = useState(false);
 
@@ -9,6 +9,23 @@ const Header = ({ isLoggedIn, handleLogout, setShowIngreso }) => {
     };
 
     return (
+        /*22. <header className="header">*/
+        /*Para  23. <img src="/logo.png" alt="Logo" className="w-12 h-12 " />
+        cambiar por
+        <img src="/logo.png" alt="Logo" className="img" />*/
+        /*25. <nav className="flex gap-4 justify-between gap-4 w-full h-full">
+        cambiar por 
+        <nav classname="nav"> */
+        /*26. <Link to="/" className="text-white hover:text-gray-200 ">
+        cambiar por
+        <Link to="/" className="nav-link">*/
+        /*<button onClick={handleMenuClick} className="focus:outline-none">
+        Cambiar por*/
+        /*<Link to="/" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Cambiar por
+        <Link to="/" className="bg-blue-500>
+
+        */ 
         <header className="flex justify-between items-center" style={{ backgroundColor: 'rgb(108, 53, 121)' }}>
             <div className="flex items-center gap-10 flex-grow">
                 <img src="/logo.png" alt="Logo" className="w-12 h-12 " />

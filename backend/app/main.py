@@ -79,7 +79,7 @@ def init_app():
         await app.db_connection.close()
 
     async def connect_db():
-        conn = await asyncpg.connect(user='postgres', password='1234509876', database='test', host='localhost')
+        conn = await asyncpg.connect(user='Cristian', password='1234509876', database='test', host='databasetest.cucej1optovn.us-east-1.rds.amazonaws.com')
         return conn
 
     # Bloque de funciones de primer necesidad #
@@ -703,6 +703,107 @@ def init_app():
             return {"message": "Venta no encontrada"}
 
     # Bloque de funciones CRUD para venta #
+
+    @app.post("/registro_vendedor")
+    async def registro_vendedor(data: dict):
+        try:
+            usuario_data = data.get("user")
+            vendedor_data = data.get("vendedor")
+            usuario = User(**usuario_data)
+            vendedor = Vendedor(**vendedor_data)
+            # Verificar si el correo electrónico ya existe en la base de datos
+            query = "SELECT email FROM usuario WHERE email = $1"
+            row = await app.db_connection.fetchrow(query, usuario.email)
+            if row:
+                return {"message": "El correo electrónico ya está registrado"}
+
+            # Almacenar el nuevo usuario en la base de datos
+            password_bytes = usuario.password.encode('utf-8')
+            salt = hashlib.sha256(password_bytes).hexdigest().encode('utf-8')
+            hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
+            hashed_password = salt + hashed_bytes
+
+            # Convertir el hash a base64
+            hashed_password_b64 = base64.b64encode(hashed_password).decode('utf-8')
+
+            # Insertar el usuario en la tabla "usuario"
+            query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, tipo"
+            values = (usuario.name, usuario.email, usuario.cellphone, hashed_password_b64, usuario.tipo)
+            usuario_row = await app.db_connection.fetchrow(query, *values)
+
+            # Insertar el vendedor en la tabla "vendedor"
+            ventas = vendedor.historial_ventas.split(", ")
+            query = "INSERT INTO vendedor (nombre_tienda, rues, nombre) VALUES ($1::text, $2::integer, $3::text) RETURNING id, nombre_tienda, rues, historial_ventas, nombre"
+            values = (vendedor.nombre_tienda, vendedor.rues, vendedor.nombre)
+            vendedor_row = await app.db_connection.fetchrow(query, *values)
+
+            print("usuario_row:", usuario_row)
+            print("vendedor_row:", vendedor_row)
+
+            return {
+                "usuario": {"id": usuario_row[0], "name": usuario_row[1], "email": usuario_row[2], "cellphone": usuario_row[3],
+                            "tipo": usuario_row[4]},
+                "vendedor": {"id": vendedor_row[0], "nombre_tienda": vendedor_row[1], "rues": vendedor_row[2],
+                            "historial_ventas": vendedor_row[3], "nombre": vendedor_row[4]}
+            }
+        except Exception as e:
+            print(usuario)
+            print(vendedor)
+            return {"user" : usuario, "vendedor": vendedor, "error": str(e)}
+        
+    @app.post("/registro_comprador")
+    async def registro_comprador(data: dict):
+        usuario=None
+        comprador = None
+        try:
+            usuario_data = data.get("user")
+            comprador_data = data.get("comprador")
+            usuario = User(**usuario_data)
+            comprador = Comprador(**comprador_data)
+            
+            # Verificar si el correo electrónico ya existe en la base de datos
+            query = "SELECT email FROM usuario WHERE email = $1"
+            row = await app.db_connection.fetchrow(query, usuario.email)
+            if row:
+                return {"message": "El correo electrónico ya está registrado"}
+
+            # Almacenar el nuevo usuario en la base de datos
+            password_bytes = usuario.password.encode('utf-8')
+            salt = hashlib.sha256(password_bytes).hexdigest().encode('utf-8')
+            hashed_bytes = hashlib.pbkdf2_hmac('sha256', password_bytes, salt, 100000)
+            hashed_password = salt + hashed_bytes
+
+            # Convertir el hash a base64
+            hashed_password_b64 = base64.b64encode(hashed_password).decode('utf-8')
+
+            # Insertar el usuario en la tabla "usuario"
+            query = "INSERT INTO usuario (name, email, cellphone, password, tipo) VALUES ($1::text, $2::text, $3::text, $4::text, $5::text) RETURNING id, name, email, cellphone, tipo"
+            values = (usuario.name, usuario.email, usuario.cellphone, hashed_password_b64, usuario.tipo)
+            usuario_row = await app.db_connection.fetchrow(query, *values)
+
+            # Insertar el comprador en la tabla "comprador"
+            compras = comprador.historial_compras.split(", ")
+            query = "INSERT INTO comprador (name, direccion, telefono) VALUES ($1::text, $2::text, $3::bigint) RETURNING id, direccion, telefono, name"
+            values = (comprador.name, comprador.direccion, comprador.telefono)
+            comprador_row = await app.db_connection.fetchrow(query, *values)
+
+            return {
+                "usuario": {
+                    "id": usuario_row[0],
+                    "name": usuario_row[1],
+                    "email": usuario_row[2],
+                    "cellphone": usuario_row[3],
+                    "tipo": usuario_row[4]
+                },
+                "comprador": {
+                    "id": comprador_row[0],
+                    "direccion": comprador_row[1],
+                    "telefono": comprador_row[2],
+                    "nombre": comprador_row[3]
+                }
+            }
+        except Exception as e:
+            return {"user": usuario, "comprador": comprador, "error": str(e)}
 
     return app
 

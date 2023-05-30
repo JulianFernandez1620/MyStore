@@ -1,8 +1,18 @@
 import React from "react";
 import { FiFacebook, FiInstagram, FiTwitter } from 'react-icons/fi';
-
+/*import './Footer.css'*/
 function Footer (){
     return(
+        /*footer className="flex items-center justify-between bg-purple-700 text-white py-5 px-10 w-full*/
+        /*Por*/
+        /*<footer className="footer-container">*/
+        /*<div className="flex space-x-4 justify-between"> */
+        /*Por*/
+        /*<div class className="redes-link">*/
+        /*Para las a dejar solo los links*/
+        /*<a href="https://web.facebook.com/profile.php?id=100091879890216" className="text-white hover:text-gray-300">*/
+        /*Por*/
+        /*<a href="https://web.facebook.com/profile.php?id=100091879890216"></a>*/
         <footer className="flex items-center justify-between bg-purple-700 text-white py-5 px-10 w-full">
             <div>© 2023 My E-commerce</div>
             <div className="flex space-x-4 justify-between">

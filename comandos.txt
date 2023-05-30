@@ -1,0 +1,17 @@
+python -m venv env 
+.\env\Scripts\activate
+
+----INSTALAR LO NECESARIO ----
+pip install --only-binary :all: fastapi[all]
+pip install uvicorn
+
+
+----------------------------------------------------------------
+poetry new backend
+cd .\backend\
+poetry add uvicorn fastapi
+poetry install
+
+----------------------------------------------------------------
+
+poetry run start

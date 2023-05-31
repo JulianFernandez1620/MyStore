@@ -45,7 +45,9 @@ SECRET_KEY = secrets.token_hex(32)
 origins= ["http://localhost:3000",
           "http://localhost:8000",
           "http://localhost:8888",
-          "http://localhost:5432"]
+          "http://localhost:5432",
+          "http://localhost"
+          ]
 
 
 app = FastAPI()

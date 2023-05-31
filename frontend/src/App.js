@@ -8,6 +8,7 @@ import CrearProducto from './vistas/crearproducto';
 import Header from './partes/Header';
 import RegistroComprador from './vistas/RegistroComprador';
 import RegistroVendedor from './vistas/RegistroVendedor';
+import PQRSPage from './vistas/PQRSPage';
 
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,12 +45,9 @@ function App() {
                 <Route path="/RegistroVendedor" element={<RegistroVendedor />} />
                 <Route path="/RegistroComprador" element={<RegistroComprador />} />
                 <Route path="/cambiarClave" element={<CambiarClave isLoggedIn={isLoggedIn} />} />
-                <Route
-                    path="/*"
-                    element={<PantallaInicio isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}
-                />
+                <Route path="/*" element={<PantallaInicio isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />}/>
                 <Route path="/crearproducto" element={<CrearProducto />} />
-
+                <Route path='/PQRSpage' element={<PQRSPage/>}/>
             </Routes>
         </Router>
     );
